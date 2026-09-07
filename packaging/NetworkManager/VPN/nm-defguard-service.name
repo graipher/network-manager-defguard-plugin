@@ -1,0 +1,5 @@
+[VPN Connection]
+name=defguard
+service=org.freedesktop.NetworkManager.defguard
+program=/usr/libexec/nm-defguard-service
+supports-multiple-connections=false
