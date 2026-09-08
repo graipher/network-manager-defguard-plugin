@@ -41,6 +41,17 @@ make build
 sudo make install
 ```
 
+Run the same formatting, lint, test, and GitHub Actions security checks locally
+with [prek](https://prek.j178.dev/):
+
+```sh
+prek run --all-files
+prek install
+```
+
+The first command checks the whole repository; the second installs the checks
+as a Git pre-commit hook. Prek installs the pinned zizmor version automatically.
+
 This installs:
 
 - `/usr/libexec/nm-defguard-service`
