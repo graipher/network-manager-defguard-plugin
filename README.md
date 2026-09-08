@@ -65,6 +65,30 @@ no NetworkManager-managed secrets. Defguard authentication still happens in
 the browser during activation. Without this helper, GNOME Settings waits about
 25 seconds for a secret request to time out before displaying the editor.
 
+## Install a release
+
+GitHub releases provide an amd64 Debian package containing the complete plugin,
+including both settings editors. With Defguard Client already installed,
+download the `.deb` and install it with:
+
+```sh
+sudo apt install ./network-manager-defguard_<version>_amd64.deb
+nm-defguard-import --with-predefined
+```
+
+Each release also includes `SHA256SUMS`. Maintainers create a release by
+pushing a semantic-version tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions formats, lints, builds, tests, packages, and publishes the tag.
+Homebrew is not used because this plugin is Linux-specific and installs native
+NetworkManager, D-Bus, GTK3, and GTK4 components rather than a standalone Go
+binary.
+
 ## Import Defguard locations
 
 Run the importer as the normal desktop user who enrolled Defguard. Do **not**

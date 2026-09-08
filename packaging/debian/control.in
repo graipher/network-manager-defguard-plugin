@@ -1,0 +1,10 @@
+Package: network-manager-defguard
+Version: @VERSION@
+Section: net
+Priority: optional
+Architecture: @ARCH@
+Maintainer: network-manager-defguard contributors <noreply@github.com>
+Depends: network-manager, defguard-client (>= 2.1.0), libgtk-3-0t64 | libgtk-3-0, libgtk-4-1
+Description: NetworkManager frontend for Defguard VPN
+ Exposes enrolled Defguard locations as NetworkManager VPN profiles while
+ Defguard continues to manage authentication and WireGuard configuration.

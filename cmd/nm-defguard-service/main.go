@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/graipher/network-manager-defguard-plugin/internal/nmplugin"
 	"github.com/godbus/dbus/v5"
+	"github.com/graipher/network-manager-defguard-plugin/internal/nmplugin"
 )
 
 func main() {
