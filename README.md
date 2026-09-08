@@ -77,6 +77,19 @@ no NetworkManager-managed secrets. Defguard authentication still happens in
 the browser during activation. Without this helper, GNOME Settings waits about
 25 seconds for a secret request to time out before displaying the editor.
 
+## Settings editor
+
+Imported Defguard profiles appear alongside other VPN connections and can be
+activated from the regular NetworkManager menu:
+
+![Defguard profiles in the NetworkManager VPN menu](docs/images/networkmanager-vpn-menu.png)
+
+The **Identity** tab then shows the read-only Defguard details. WireGuard
+settings are intentionally absent because Defguard downloads and manages the
+temporary WireGuard configuration after authentication.
+
+![Read-only Defguard connection details in NetworkManager](docs/images/networkmanager-defguard-editor.png)
+
 ## Install a release
 
 GitHub releases provide an amd64 Debian package containing the complete plugin,
