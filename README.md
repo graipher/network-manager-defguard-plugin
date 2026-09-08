@@ -33,6 +33,30 @@ The browser authentication flow also requires the enrolled user to have an
 active desktop and user-systemd session. The Defguard GUI itself does not need
 to remain open.
 
+## Install a release
+
+GitHub releases provide an amd64 Debian package containing the complete plugin,
+including both settings editors. With Defguard Client already installed,
+download the `.deb` and install it with:
+
+```sh
+sudo apt install ./network-manager-defguard_<version>_amd64.deb
+nm-defguard-import --with-predefined
+```
+
+Each release also includes `SHA256SUMS`. Maintainers create a release by
+pushing a semantic-version tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions formats, lints, builds, tests, packages, and publishes the tag.
+Homebrew is not used because this plugin is Linux-specific and installs native
+NetworkManager, D-Bus, GTK3, and GTK4 components rather than a standalone Go
+binary.
+
 ## Build and install
 
 ```sh
@@ -82,37 +106,13 @@ the browser during activation. Without this helper, GNOME Settings waits about
 Imported Defguard profiles appear alongside other VPN connections and can be
 activated from the regular NetworkManager menu:
 
-![Defguard profiles in the NetworkManager VPN menu](docs/images/networkmanager-vpn-menu.png)
+<img src="docs/images/networkmanager-vpn-menu.png" alt="Defguard profiles in the NetworkManager VPN menu" width="420">
 
 The **Identity** tab then shows the read-only Defguard details. WireGuard
 settings are intentionally absent because Defguard downloads and manages the
 temporary WireGuard configuration after authentication.
 
 ![Read-only Defguard connection details in NetworkManager](docs/images/networkmanager-defguard-editor.png)
-
-## Install a release
-
-GitHub releases provide an amd64 Debian package containing the complete plugin,
-including both settings editors. With Defguard Client already installed,
-download the `.deb` and install it with:
-
-```sh
-sudo apt install ./network-manager-defguard_<version>_amd64.deb
-nm-defguard-import --with-predefined
-```
-
-Each release also includes `SHA256SUMS`. Maintainers create a release by
-pushing a semantic-version tag:
-
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-GitHub Actions formats, lints, builds, tests, packages, and publishes the tag.
-Homebrew is not used because this plugin is Linux-specific and installs native
-NetworkManager, D-Bus, GTK3, and GTK4 components rather than a standalone Go
-binary.
 
 ## Import Defguard locations
 
