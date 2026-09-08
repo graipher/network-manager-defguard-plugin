@@ -3,3 +3,11 @@ name=defguard
 service=org.freedesktop.NetworkManager.defguard
 program=/usr/libexec/nm-defguard-service
 supports-multiple-connections=false
+
+[GNOME]
+auth-dialog=/usr/libexec/nm-defguard-auth-dialog
+supports-external-ui-mode=true
+supports-hints=true
+
+[libnm]
+plugin=libnm-vpn-plugin-defguard.so

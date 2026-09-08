@@ -14,7 +14,14 @@ the Defguard app.
 - Linux with NetworkManager and systemd
 - Defguard Desktop Client 2.1 or later, already enrolled for the current user
 - `defguard-client`, `runuser`, and `systemd-run`
-- Go (only to build from source)
+- Go, a C compiler, `pkg-config`, and the libnm/GTK development headers (only
+  to build from source)
+
+On Debian or Ubuntu, install the native build dependencies with:
+
+```sh
+sudo apt-get install build-essential pkg-config libnm-dev libgtk-3-dev libgtk-4-dev
+```
 
 The Defguard system service must be running:
 
@@ -37,12 +44,26 @@ sudo make install
 This installs:
 
 - `/usr/libexec/nm-defguard-service`
+- `/usr/libexec/nm-defguard-auth-dialog`
 - `/usr/bin/nm-defguard-import`
+- `/usr/lib/<architecture>/NetworkManager/libnm-vpn-plugin-defguard.so`
+- `/usr/lib/<architecture>/NetworkManager/libnm-vpn-plugin-defguard-editor.so`
+- `/usr/lib/<architecture>/NetworkManager/libnm-gtk4-vpn-plugin-defguard-editor.so`
 - `/usr/lib/NetworkManager/VPN/nm-defguard-service.name`
 - `/usr/share/dbus-1/system.d/nm-defguard-service.conf`
 
 No plugin-specific systemd unit needs to be enabled. NetworkManager discovers
 the `.name` file and launches `nm-defguard-service` on demand.
+
+The GTK3 and GTK4 editor modules add a read-only Defguard section to compatible
+NetworkManager settings applications. It shows the location ID, instance,
+endpoint, and traffic mode. WireGuard details remain absent because Defguard,
+not NetworkManager, owns the temporary WireGuard configuration.
+
+The auth-dialog helper only tells desktop secret agents that this profile has
+no NetworkManager-managed secrets. Defguard authentication still happens in
+the browser during activation. Without this helper, GNOME Settings waits about
+25 seconds for a secret request to time out before displaying the editor.
 
 ## Import Defguard locations
 
@@ -172,16 +193,20 @@ Common causes of failed activation are:
 
 ## Uninstall
 
-Disconnect and optionally delete imported profiles, then remove the four files
+Disconnect and optionally delete imported profiles, then remove the installed files
 listed in the installation section:
 
 ```sh
 nmcli connection down "office (Defguard)"
 nmcli connection delete "office (Defguard)"
 sudo rm /usr/libexec/nm-defguard-service \
+  /usr/libexec/nm-defguard-auth-dialog \
   /usr/bin/nm-defguard-import \
   /usr/lib/NetworkManager/VPN/nm-defguard-service.name \
   /usr/share/dbus-1/system.d/nm-defguard-service.conf
+sudo rm "$(pkg-config --variable=libdir libnm)/NetworkManager/libnm-vpn-plugin-defguard.so" \
+  "$(pkg-config --variable=libdir libnm)/NetworkManager/libnm-vpn-plugin-defguard-editor.so" \
+  "$(pkg-config --variable=libdir libnm)/NetworkManager/libnm-gtk4-vpn-plugin-defguard-editor.so"
 ```
 
 Do not disable `defguard-service.service` if the regular Defguard app is still
