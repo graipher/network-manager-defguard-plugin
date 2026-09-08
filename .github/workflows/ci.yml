@@ -26,6 +26,8 @@ jobs:
           test -z "$(gofmt -l .)"
           clang-format --dry-run --Werror properties/*.c
       - name: Lint
-        run: go vet ./...
+        run: |
+          go vet ./...
+          go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
       - name: Build and test
         run: make test CFLAGS='-O2 -Wall -Wextra -Werror'

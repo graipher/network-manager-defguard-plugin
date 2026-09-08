@@ -25,6 +25,7 @@ jobs:
           test -z "$(gofmt -l .)"
           clang-format --dry-run --Werror properties/*.c
           go vet ./...
+          go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
           make test CFLAGS='-O2 -Wall -Wextra -Werror'
       - name: Build Debian package
         run: |

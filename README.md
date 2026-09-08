@@ -50,7 +50,8 @@ prek install
 ```
 
 The first command checks the whole repository; the second installs the checks
-as a Git pre-commit hook. Prek installs the pinned zizmor version automatically.
+as a Git pre-commit hook. This includes `govulncheck` for reachable Go
+vulnerabilities. Prek installs the pinned zizmor version automatically.
 
 This installs:
 

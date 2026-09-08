@@ -17,6 +17,12 @@ repos:
         language: system
         files: \.go$
         pass_filenames: false
+      - id: govulncheck
+        name: govulncheck
+        entry: go run golang.org/x/vuln/cmd/govulncheck@v1.7.0 ./...
+        language: system
+        files: (^go\.(mod|sum)$|\.go$)
+        pass_filenames: false
       - id: test
         name: build and test
         entry: make test
