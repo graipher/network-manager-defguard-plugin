@@ -9,19 +9,24 @@ handle browser SSO, WireGuard, routes, DNS, posture checks, and session keys.
 Connecting from NetworkManager therefore opens the same authentication flow as
 the Defguard app.
 
+## Screenshots
+
+Imported Defguard profiles appear alongside other VPN connections and can be
+activated from the regular NetworkManager menu:
+
+<img src="docs/images/networkmanager-vpn-menu.png" alt="Defguard profiles in the NetworkManager VPN menu" width="420">
+
+The **Identity** tab shows the read-only Defguard details. WireGuard settings
+are intentionally absent because Defguard downloads and manages the temporary
+WireGuard configuration after authentication.
+
+![Read-only Defguard connection details in NetworkManager](docs/images/networkmanager-defguard-editor.png)
+
 ## Requirements
 
 - Linux with NetworkManager and systemd
 - Defguard Desktop Client 2.1 or later, already enrolled for the current user
 - `defguard-client`, `runuser`, and `systemd-run`
-- Go, a C compiler, `pkg-config`, and the libnm/GTK development headers (only
-  to build from source)
-
-On Debian or Ubuntu, install the native build dependencies with:
-
-```sh
-sudo apt-get install build-essential pkg-config libnm-dev libgtk-3-dev libgtk-4-dev
-```
 
 The Defguard system service must be running:
 
@@ -35,29 +40,26 @@ to remain open.
 
 ## Install a release
 
-GitHub releases provide an amd64 Debian package containing the complete plugin,
-including both settings editors. With Defguard Client already installed,
-download the `.deb` and install it with:
+[GitHub releases](https://github.com/graipher/network-manager-defguard-plugin/releases)
+provide an amd64 Debian package containing the complete plugin, including both
+settings editors. With Defguard Client already installed, download the `.deb`
+and install it with:
 
 ```sh
 sudo apt install ./network-manager-defguard_<version>_amd64.deb
-nm-defguard-import --with-predefined
 ```
 
-Each release also includes `SHA256SUMS`. Maintainers create a release by
-pushing a semantic-version tag:
+Each release also includes `SHA256SUMS`. Continue with
+[Import Defguard locations](#import-defguard-locations) after installation.
+
+## Build from source
+
+Install Go, a C compiler, `pkg-config`, and the libnm/GTK development headers.
+On Debian or Ubuntu:
 
 ```sh
-git tag v0.1.0
-git push origin v0.1.0
+sudo apt-get install build-essential pkg-config libnm-dev libgtk-3-dev libgtk-4-dev
 ```
-
-GitHub Actions formats, lints, builds, tests, packages, and publishes the tag.
-Homebrew is not used because this plugin is Linux-specific and installs native
-NetworkManager, D-Bus, GTK3, and GTK4 components rather than a standalone Go
-binary.
-
-## Build and install
 
 ```sh
 make test
@@ -90,29 +92,6 @@ This installs:
 
 No plugin-specific systemd unit needs to be enabled. NetworkManager discovers
 the `.name` file and launches `nm-defguard-service` on demand.
-
-The GTK3 and GTK4 editor modules add a read-only Defguard section to compatible
-NetworkManager settings applications. It shows the location ID, instance,
-endpoint, and traffic mode. WireGuard details remain absent because Defguard,
-not NetworkManager, owns the temporary WireGuard configuration.
-
-The auth-dialog helper only tells desktop secret agents that this profile has
-no NetworkManager-managed secrets. Defguard authentication still happens in
-the browser during activation. Without this helper, GNOME Settings waits about
-25 seconds for a secret request to time out before displaying the editor.
-
-## Settings editor
-
-Imported Defguard profiles appear alongside other VPN connections and can be
-activated from the regular NetworkManager menu:
-
-<img src="docs/images/networkmanager-vpn-menu.png" alt="Defguard profiles in the NetworkManager VPN menu" width="420">
-
-The **Identity** tab then shows the read-only Defguard details. WireGuard
-settings are intentionally absent because Defguard downloads and manages the
-temporary WireGuard configuration after authentication.
-
-![Read-only Defguard connection details in NetworkManager](docs/images/networkmanager-defguard-editor.png)
 
 ## Import Defguard locations
 
@@ -179,7 +158,14 @@ session and browser interaction. Connect from the network menu after login.
 
 ## Upgrade
 
-Rebuild and replace the installed files:
+For a release installation, download the newer `.deb` and install it with:
+
+```sh
+sudo apt install ./network-manager-defguard_<version>_amd64.deb
+nm-defguard-import
+```
+
+For a source installation, rebuild and replace the installed files:
 
 ```sh
 make test
@@ -242,12 +228,22 @@ Common causes of failed activation are:
 
 ## Uninstall
 
-Disconnect and optionally delete imported profiles, then remove the installed files
-listed in the installation section:
+Disconnect and optionally delete imported profiles:
 
 ```sh
 nmcli connection down "office (Defguard)"
 nmcli connection delete "office (Defguard)"
+```
+
+For a release installation, remove the package:
+
+```sh
+sudo apt remove network-manager-defguard
+```
+
+For a source installation, remove the installed files:
+
+```sh
 sudo rm /usr/libexec/nm-defguard-service \
   /usr/libexec/nm-defguard-auth-dialog \
   /usr/bin/nm-defguard-import \
@@ -260,6 +256,18 @@ sudo rm "$(pkg-config --variable=libdir libnm)/NetworkManager/libnm-vpn-plugin-d
 
 Do not disable `defguard-service.service` if the regular Defguard app is still
 in use.
+
+## Release process
+
+Maintainers publish a release by pushing a semantic-version tag:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions runs the checks, builds the amd64 Debian package, and publishes
+the package and `SHA256SUMS` to the GitHub release.
 
 ## Current limitations
 
