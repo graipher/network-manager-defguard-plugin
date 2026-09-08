@@ -1,6 +1,30 @@
 package defguard
 
-import "testing"
+import (
+	"context"
+	"reflect"
+	"testing"
+)
+
+type recordingRunner struct{ args []string }
+
+func (r *recordingRunner) Run(_ context.Context, args ...string) ([]byte, error) {
+	r.args = args
+	return nil, nil
+}
+
+func TestConnectTrafficModes(t *testing.T) {
+	for mode, flag := range map[string]string{"all": "--all-traffic", "predefined": "--predefined-traffic"} {
+		r := &recordingRunner{}
+		if err := (Client{Runner: r}).Connect(context.Background(), 7, "Acme", mode); err != nil {
+			t.Fatal(err)
+		}
+		want := []string{"connect", "--id", "7", "--json", "--instance", "Acme", flag}
+		if !reflect.DeepEqual(r.args, want) {
+			t.Fatalf("Connect(%q) args = %#v, want %#v", mode, r.args, want)
+		}
+	}
+}
 
 func TestNewInterface(t *testing.T) {
 	before := Status{Active: []Active{{Type: "location", Name: "office", Interface: "wg0"}}}

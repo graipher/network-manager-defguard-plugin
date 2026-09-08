@@ -14,7 +14,7 @@ func TestParseActivation(t *testing.T) {
 		"vpn":        {"data": dbus.MakeVariant(map[string]string{"location-id": "7", "instance": "acme", "user": currentUser(t), "endpoint": "127.0.0.1:51820"}), "secrets": dbus.MakeVariant(map[string]string{"defguard-connected": "true", "defguard-interface": "wg7"})},
 	}
 	a, err := parseActivation(settings)
-	if err != nil || a.id != 7 || a.user != currentUser(t) {
+	if err != nil || a.id != 7 || a.user != currentUser(t) || a.trafficMode != "all" {
 		t.Fatalf("parseActivation() = %#v, %v", a, err)
 	}
 }

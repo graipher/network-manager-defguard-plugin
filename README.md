@@ -57,9 +57,23 @@ nm-defguard-import --dry-run
 nm-defguard-import
 ```
 
+The regular profile explicitly routes all traffic through Defguard. To also
+create a profile that routes only the location's predefined traffic, run:
+
+```sh
+nm-defguard-import --with-predefined
+```
+
+This creates two selectable profiles per location:
+
+- `office (Defguard)` — all traffic (`defguard-client connect --all-traffic`)
+- `office – predefined (Defguard)` — predefined traffic only
+  (`defguard-client connect --predefined-traffic`)
+
 Importing again refreshes existing profiles instead of duplicating them.
 Profiles persist in NetworkManager, so rerun the importer only after Defguard
-locations change.
+locations change. Running without `--with-predefined` does not delete a
+previously imported predefined profile.
 
 ## Connect and disconnect
 
@@ -72,6 +86,9 @@ The equivalent command-line operations are:
 nmcli connection up "office (Defguard)"
 nmcli connection down "office (Defguard)"
 ```
+
+Use `office – predefined (Defguard)` instead when only predefined traffic
+should use the VPN.
 
 Wait for browser authentication to finish before judging the `nmcli` command
 as stalled. Closing or rejecting the browser flow causes activation to fail.

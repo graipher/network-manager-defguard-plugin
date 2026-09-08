@@ -11,8 +11,9 @@ import (
 
 func main() {
 	dryRun := flag.Bool("dry-run", false, "show profiles without changing NetworkManager")
+	withPredefined := flag.Bool("with-predefined", false, "also import a predefined-traffic profile for each location")
 	flag.Parse()
-	if err := importer.Run(context.Background(), *dryRun, defguard.CommandRunner{}, nil); err != nil {
+	if err := importer.Run(context.Background(), *dryRun, *withPredefined, defguard.CommandRunner{}, nil); err != nil {
 		log.Fatal(err)
 	}
 }

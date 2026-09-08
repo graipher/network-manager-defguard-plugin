@@ -76,10 +76,18 @@ func (c Client) Status(ctx context.Context) (Status, error) {
 	return result, err
 }
 
-func (c Client) Connect(ctx context.Context, id int64, instance string) error {
+func (c Client) Connect(ctx context.Context, id int64, instance, trafficMode string) error {
 	args := []string{"connect", "--id", strconv.FormatInt(id, 10), "--json"}
 	if instance != "" {
 		args = append(args, "--instance", instance)
+	}
+	switch trafficMode {
+	case "all":
+		args = append(args, "--all-traffic")
+	case "predefined":
+		args = append(args, "--predefined-traffic")
+	default:
+		return fmt.Errorf("invalid traffic mode %q", trafficMode)
 	}
 	_, err := c.Runner.Run(ctx, args...)
 	return err

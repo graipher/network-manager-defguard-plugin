@@ -24,7 +24,7 @@ func (r *commandRunner) Run(_ context.Context, name string, args ...string) ([]b
 
 func TestDryRunDoesNotMutate(t *testing.T) {
 	r := &commandRunner{}
-	if err := Run(context.Background(), true, dgRunner{}, r); err != nil {
+	if err := Run(context.Background(), true, false, dgRunner{}, r); err != nil {
 		t.Fatal(err)
 	}
 	if len(r.calls) != 1 || !reflect.DeepEqual(r.calls[0][:4], []string{"nmcli", "-g", "vpn.service-type", "connection"}) {
@@ -33,19 +33,33 @@ func TestDryRunDoesNotMutate(t *testing.T) {
 }
 
 func TestProfileName(t *testing.T) {
-	got := profileName(defguard.Location{ID: 7, Instance: " Acme ", Name: "Office   North"})
+	location := defguard.Location{ID: 7, Instance: " Acme ", Name: "Office   North"}
+	got := profileName(location, "all")
 	if got != "Office North (Defguard)" {
 		t.Fatalf("profileName()=%q", got)
+	}
+	if got := profileName(location, "predefined"); got != "Office North – predefined (Defguard)" {
+		t.Fatalf("profileName(predefined)=%q", got)
 	}
 }
 
 func TestProfileUUIDIsStableAndUserScoped(t *testing.T) {
-	got := profileUUID("alice", 7)
-	if got != profileUUID("alice", 7) || got == profileUUID("bob", 7) {
+	got := profileUUID("alice", 7, "all")
+	if got != profileUUID("alice", 7, "all") || got == profileUUID("bob", 7, "all") || got == profileUUID("alice", 7, "predefined") {
 		t.Fatalf("unstable or unscoped UUID: %q", got)
 	}
 	if len(got) != 36 || got[14] != '5' {
 		t.Fatalf("invalid version-5 UUID: %q", got)
+	}
+}
+
+func TestWithPredefinedDryRunChecksBothProfiles(t *testing.T) {
+	r := &commandRunner{}
+	if err := Run(context.Background(), true, true, dgRunner{}, r); err != nil {
+		t.Fatal(err)
+	}
+	if len(r.calls) != 2 {
+		t.Fatalf("calls: %#v", r.calls)
 	}
 }
 

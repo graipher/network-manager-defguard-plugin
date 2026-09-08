@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/graipher/network-manager-defguard-plugin/internal/defguard"
 	"github.com/godbus/dbus/v5"
 	"github.com/godbus/dbus/v5/introspect"
+	"github.com/graipher/network-manager-defguard-plugin/internal/defguard"
 )
 
 const (
@@ -59,6 +59,7 @@ type activation struct {
 	id            int64
 	instance      string
 	user          string
+	trafficMode   string
 	interfaceName string
 	endpoint      string
 	created       bool
@@ -126,7 +127,7 @@ func (s *Service) connectDefguard(ctx context.Context, a activation) {
 		s.fail(failureConnect, err)
 		return
 	}
-	if err := client.Connect(ctx, a.id, a.instance); err != nil {
+	if err := client.Connect(ctx, a.id, a.instance, a.trafficMode); err != nil {
 		s.fail(failureLogin, err)
 		return
 	}
@@ -321,7 +322,14 @@ func parseActivation(settings ConnectionSettings) (activation, error) {
 	if len(permittedUsers) != 1 || permittedUsers[0] != username {
 		return activation{}, fmt.Errorf("profile user %q does not match its NetworkManager permission", username)
 	}
-	return activation{id: id, instance: values["instance"], user: username, endpoint: values["endpoint"]}, nil
+	trafficMode := values["traffic-mode"]
+	if trafficMode == "" {
+		trafficMode = "all"
+	}
+	if trafficMode != "all" && trafficMode != "predefined" {
+		return activation{}, fmt.Errorf("invalid traffic mode %q", trafficMode)
+	}
+	return activation{id: id, instance: values["instance"], user: username, trafficMode: trafficMode, endpoint: values["endpoint"]}, nil
 }
 
 func permissionUsers(permissions []string) []string {
